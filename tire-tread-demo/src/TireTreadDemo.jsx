@@ -13,7 +13,7 @@ import {
   Cell,
 } from "recharts";
 
-// ── Data (classes)────────────────────────────────────────────────────────────────────
+// ── Data (classes )────────────────────────────────────────────────────────────────────
 const CLASS_DATA = [
   { depth: '2/32"', count: 18, mae: 0.1434, safety: "critical" },
   { depth: '3/32"', count: 50, mae: 0.2699, safety: "critical" },
@@ -247,4 +247,519 @@ function PredictorTab() {
       setRunning(false);
     }, 700);
   };
+
+  const depth = depthIdx + 2;
+  const safety = result ? safetyInfo(result.pred) : null;
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: 24,
+        maxWidth: 860,
+      }}
+    >
+      {/* Controls */}
+      <div
+        style={{
+          background: "#161616",
+          border: "1px solid #2a2a2a",
+          borderRadius: 12,
+          padding: 24,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 14,
+            fontWeight: 600,
+            marginBottom: 20,
+            color: "#ccc",
+          }}
+        >
+          Simulation controls
+        </div>
+
+        <SliderRow
+          label="True tread depth"
+          value={depth}
+          display={`${depth}/32"`}
+          min={2}
+          max={10}
+          step={1}
+          onChange={(v) => setDepthIdx(v - 2)}
+        />
+        <SliderRow
+          label="Lighting quality"
+          value={lighting}
+          display={`${lighting}%`}
+          min={0}
+          max={100}
+          step={1}
+          onChange={setLighting}
+        />
+        <SliderRow
+          label="Camera angle"
+          value={angle}
+          display={`${angle}%`}
+          min={0}
+          max={100}
+          step={1}
+          onChange={setAngle}
+        />
+
+        <div
+          style={{ marginTop: 24, display: "flex", justifyContent: "center" }}
+        >
+          <TireIcon depth={depth} size={110} />
+        </div>
+
+        <button
+          onClick={run}
+          disabled={running}
+          style={{
+            marginTop: 20,
+            width: "100%",
+            padding: "12px 0",
+            background: running ? "#333" : "#e85d20",
+            color: "#fff",
+            border: "none",
+            borderRadius: 8,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: running ? "not-allowed" : "pointer",
+            transition: "background 0.2s",
+            fontFamily: "inherit",
+          }}
+        >
+          {running ? "Running inference…" : "Run prediction"}
+        </button>
+      </div>
+
+      {/* Result */}
+      <div
+        style={{
+          background: "#161616",
+          border: "1px solid #2a2a2a",
+          borderRadius: 12,
+          padding: 24,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 14,
+            fontWeight: 600,
+            marginBottom: 20,
+            color: "#ccc",
+          }}
+        >
+          Model output
+        </div>
+
+        {!result && !running && (
+          <div
+            style={{
+              color: "#444",
+              fontSize: 13,
+              marginTop: 40,
+              textAlign: "center",
+            }}
+          >
+            Adjust sliders and click "Run prediction"
+          </div>
+        )}
+        {running && (
+          <div
+            style={{
+              color: "#666",
+              fontSize: 13,
+              marginTop: 40,
+              textAlign: "center",
+            }}
+          >
+            <div style={{ fontSize: 32, marginBottom: 8 }}>⚙️</div>
+            Simulating ResNet-18 inference…
+          </div>
+        )}
+        {result && (
+          <>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                gap: 8,
+                marginBottom: 4,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 56,
+                  fontWeight: 800,
+                  color: "#e85d20",
+                  lineHeight: 1,
+                }}
+              >
+                {result.pred}
+              </span>
+              <span style={{ fontSize: 18, color: "#888", marginBottom: 8 }}>
+                /32"
+              </span>
+            </div>
+            <div style={{ fontSize: 12, color: "#555", marginBottom: 16 }}>
+              predicted tread depth
+            </div>
+
+            <div
+              style={{
+                background: safety.bg,
+                border: `1px solid ${safety.color}33`,
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginBottom: 16,
+              }}
+            >
+              <span
+                style={{ fontSize: 13, fontWeight: 600, color: safety.color }}
+              >
+                {safety.label}
+              </span>
+            </div>
+
+            <div style={{ marginBottom: 14 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 12,
+                  color: "#666",
+                  marginBottom: 6,
+                }}
+              >
+                <span>Confidence</span>
+                <span style={{ color: "#ccc" }}>{result.conf}%</span>
+              </div>
+              <div
+                style={{ height: 6, background: "#2a2a2a", borderRadius: 3 }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${result.conf}%`,
+                    background: "#e85d20",
+                    borderRadius: 3,
+                    transition: "width 0.6s ease",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 14 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 12,
+                  color: "#666",
+                  marginBottom: 6,
+                }}
+              >
+                <span>Expected MAE (this class)</span>
+                <span style={{ color: "#ccc" }}>±{result.mae.toFixed(4)}</span>
+              </div>
+              <div
+                style={{ height: 6, background: "#2a2a2a", borderRadius: 3 }}
+              >
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${(result.mae / 0.35) * 100}%`,
+                    background: "#888",
+                    borderRadius: 3,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                marginTop: 16,
+                padding: 12,
+                background: "#1e1e1e",
+                borderRadius: 8,
+                fontSize: 12,
+                color: "#555",
+              }}
+            >
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ color: "#888" }}>Input depth:</span> {depth}/32"
+              </div>
+              <div style={{ marginBottom: 4 }}>
+                <span style={{ color: "#888" }}>Lighting:</span> {lighting}%
+              </div>
+              <div>
+                <span style={{ color: "#888" }}>Camera angle:</span> {angle}%
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SliderRow({ label, value, display, min, max, step, onChange }) {
+  return (
+    <div style={{ marginBottom: 18 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: 12,
+          color: "#888",
+          marginBottom: 6,
+        }}
+      >
+        <span>{label}</span>
+        <span style={{ color: "#e85d20", fontWeight: 600 }}>{display}</span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(+e.target.value)}
+        style={{ width: "100%", accentColor: "#e85d20" }}
+      />
+    </div>
+  );
+}
+
+// ── Upload Tab ────────────────────────────────────────────────────────────────
+function UploadTab() {
+  const [image, setImage] = useState(null);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef();
+
+  const handleFile = (file) => {
+    if (!file || !file.type.startsWith("image/")) return;
+    const url = URL.createObjectURL(file);
+    setImage(url);
+    setResult(null);
+    setLoading(true);
+    setTimeout(() => {
+      const depthIdx = Math.floor(Math.random() * 9);
+      const res = simulatePredict(
+        depthIdx,
+        75 + Math.random() * 20,
+        70 + Math.random() * 20,
+      );
+      setResult({ ...res, depthIdx });
+      setLoading(false);
+    }, 1200);
+  };
+
+  const onDrop = useCallback((e) => {
+    e.preventDefault();
+    setDragging(false);
+    handleFile(e.dataTransfer.files[0]);
+  }, []);
+
+  const safety = result ? safetyInfo(result.pred) : null;
+
+  return (
+    <div style={{ maxWidth: 780 }}>
+      <div style={{ fontSize: 13, color: "#666", marginBottom: 20 }}>
+        Upload a real tire photo. The model will simulate a tread depth
+        prediction (real inference requires the .pth backend).
+      </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: image ? "1fr 1fr" : "1fr",
+          gap: 20,
+        }}
+      >
+        {/* Drop zone */}
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={onDrop}
+          onClick={() => inputRef.current.click()}
+          style={{
+            border: `2px dashed ${dragging ? "#e85d20" : "#2a2a2a"}`,
+            borderRadius: 12,
+            padding: 32,
+            textAlign: "center",
+            cursor: "pointer",
+            background: dragging ? "#1a1108" : "#161616",
+            transition: "all 0.2s",
+            minHeight: 260,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={(e) => handleFile(e.target.files[0])}
+          />
+          {image ? (
+            <img
+              src={image}
+              alt="Uploaded tire"
+              style={{
+                maxWidth: "100%",
+                maxHeight: 220,
+                borderRadius: 8,
+                objectFit: "contain",
+              }}
+            />
+          ) : (
+            <>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>🛞</div>
+              <div style={{ fontSize: 14, color: "#888" }}>
+                Drop a tire photo here
+              </div>
+              <div style={{ fontSize: 12, color: "#444", marginTop: 6 }}>
+                or click to browse
+              </div>
+              <div style={{ fontSize: 11, color: "#333", marginTop: 12 }}>
+                JPG, PNG, HEIC supported
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Result */}
+        {image && (
+          <div
+            style={{
+              background: "#161616",
+              border: "1px solid #2a2a2a",
+              borderRadius: 12,
+              padding: 24,
+            }}
+          >
+            {loading ? (
+              <div style={{ textAlign: "center", marginTop: 60 }}>
+                <div style={{ fontSize: 28, marginBottom: 12 }}>⚙️</div>
+                <div style={{ fontSize: 13, color: "#666" }}>
+                  Running ResNet-18 inference…
+                </div>
+                <div style={{ fontSize: 11, color: "#444", marginTop: 6 }}>
+                  Preprocessing → Forward pass → Regression head
+                </div>
+              </div>
+            ) : result ? (
+              <>
+                <div style={{ fontSize: 12, color: "#555", marginBottom: 4 }}>
+                  Predicted tread depth
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-end",
+                    gap: 6,
+                    marginBottom: 12,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 52,
+                      fontWeight: 800,
+                      color: "#e85d20",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {result.pred}
+                  </span>
+                  <span
+                    style={{ fontSize: 16, color: "#666", marginBottom: 8 }}
+                  >
+                    /32"
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    background: safety.bg,
+                    border: `1px solid ${safety.color}44`,
+                    borderRadius: 8,
+                    padding: "10px 14px",
+                    marginBottom: 16,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 600,
+                      color: safety.color,
+                    }}
+                  >
+                    {safety.label}
+                  </span>
+                </div>
+
+                <ConfBar
+                  label="Confidence"
+                  value={result.conf}
+                  display={`${result.conf}%`}
+                  color="#e85d20"
+                />
+                <ConfBar
+                  label="Class MAE"
+                  value={(result.mae / 0.35) * 100}
+                  display={`±${result.mae.toFixed(4)}`}
+                  color="#666"
+                />
+
+                <div
+                  style={{
+                    marginTop: 16,
+                    fontSize: 11,
+                    color: "#444",
+                    lineHeight: 1.8,
+                  }}
+                >
+                  Note: This is a simulated prediction. Connect the FastAPI
+                  backend with your .pth model file for real inference.
+                </div>
+
+                <button
+                  onClick={() => {
+                    setImage(null);
+                    setResult(null);
+                  }}
+                  style={{
+                    marginTop: 16,
+                    width: "100%",
+                    padding: "10px 0",
+                    background: "none",
+                    color: "#666",
+                    border: "1px solid #2a2a2a",
+                    borderRadius: 8,
+                    fontSize: 13,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  Try another photo
+                </button>
+              </>
+            ) : null}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
