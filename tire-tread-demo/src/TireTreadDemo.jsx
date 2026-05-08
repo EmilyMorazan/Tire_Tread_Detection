@@ -763,3 +763,194 @@ function UploadTab() {
     </div>
   );
 }
+
+function ConfBar({ label, value, display, color }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: 12,
+          color: "#666",
+          marginBottom: 5,
+        }}
+      >
+        <span>{label}</span>
+        <span style={{ color: "#ccc" }}>{display}</span>
+      </div>
+      <div style={{ height: 5, background: "#2a2a2a", borderRadius: 3 }}>
+        <div
+          style={{
+            height: "100%",
+            width: `${Math.min(100, value)}%`,
+            background: color,
+            borderRadius: 3,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ── Distribution Tab ──────────────────────────────────────────────────────────
+function DistributionTab() {
+  const barColor = (d) => {
+    if (d.depth === '2/32"' || d.depth === '10/32"') return "#d97706";
+    if (d.count >= 100) return "#e85d20";
+    return "#7a3010";
+  };
+  return (
+    <div style={{ maxWidth: 860 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4,1fr)",
+          gap: 12,
+          marginBottom: 28,
+        }}
+      >
+        {[
+          { label: "Total images", val: "660" },
+          { label: "Tread classes", val: "9" },
+          { label: "Largest class", val: "172", sub: '5/32"' },
+          { label: "Imbalance ratio", val: "9.6×" },
+        ].map((m) => (
+          <div
+            key={m.label}
+            style={{
+              background: "#161616",
+              border: "1px solid #2a2a2a",
+              borderRadius: 10,
+              padding: "14px 16px",
+            }}
+          >
+            <div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>
+              {m.label}
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#e85d20" }}>
+              {m.val}
+            </div>
+            {m.sub && (
+              <div style={{ fontSize: 11, color: "#555" }}>{m.sub}</div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          background: "#161616",
+          border: "1px solid #2a2a2a",
+          borderRadius: 12,
+          padding: 24,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            marginBottom: 4,
+            color: "#ccc",
+          }}
+        >
+          Images per tread depth class
+        </div>
+        <div style={{ fontSize: 12, color: "#555", marginBottom: 20 }}>
+          Classes 4–6 hold 61% of the data. Edge classes (2 and 10) are
+          safety-critical but underrepresented.
+        </div>
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart
+            data={CLASS_DATA}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+            <XAxis
+              dataKey="depth"
+              tick={{ fill: "#666", fontSize: 12 }}
+              axisLine={{ stroke: "#2a2a2a" }}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: "#666", fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip
+              contentStyle={{
+                background: "#1a1a1a",
+                border: "1px solid #333",
+                borderRadius: 6,
+                color: "#ccc",
+                fontSize: 12,
+              }}
+              formatter={(v) => [v + " images", "Count"]}
+            />
+            <Bar
+              dataKey="count"
+              radius={[4, 4, 0, 0]}
+              label={{ position: "top", fill: "#666", fontSize: 11 }}
+            >
+              {CLASS_DATA.map((d, i) => (
+                <Cell key={i} fill={barColor(d)} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+        <div
+          style={{
+            display: "flex",
+            gap: 20,
+            marginTop: 12,
+            fontSize: 12,
+            color: "#555",
+          }}
+        >
+          <span>
+            <span
+              style={{
+                display: "inline-block",
+                width: 10,
+                height: 10,
+                borderRadius: 2,
+                background: "#e85d20",
+                marginRight: 6,
+                verticalAlign: "middle",
+              }}
+            />
+            Center classes (≥100 images)
+          </span>
+          <span>
+            <span
+              style={{
+                display: "inline-block",
+                width: 10,
+                height: 10,
+                borderRadius: 2,
+                background: "#d97706",
+                marginRight: 6,
+                verticalAlign: "middle",
+              }}
+            />
+            Edge classes — safety critical
+          </span>
+          <span>
+            <span
+              style={{
+                display: "inline-block",
+                width: 10,
+                height: 10,
+                borderRadius: 2,
+                background: "#7a3010",
+                marginRight: 6,
+                verticalAlign: "middle",
+              }}
+            />
+            Mid-range classes
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
