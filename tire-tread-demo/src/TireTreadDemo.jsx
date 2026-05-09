@@ -954,3 +954,387 @@ function DistributionTab() {
     </div>
   );
 }
+
+// ── Errors Tab ────────────────────────────────────────────────────────────────
+function ErrorsTab() {
+  const maxErr = Math.max(...CLASS_DATA.map((d) => d.mae));
+  const minErr = Math.min(...CLASS_DATA.map((d) => d.mae));
+  const barColor = (mae) =>
+    mae === maxErr ? "#dc2626" : mae === minErr ? "#16a34a" : "#e85d20";
+
+  return (
+    <div style={{ maxWidth: 860 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3,1fr)",
+          gap: 12,
+          marginBottom: 28,
+        }}
+      >
+        {[
+          { label: "Overall MAE", val: "0.2573", sub: "32nds of an inch" },
+          { label: "Best class", val: "0.1434", sub: '2/32" — lowest error' },
+          { label: "Worst class", val: "0.3324", sub: '7/32" — highest error' },
+        ].map((m) => (
+          <div
+            key={m.label}
+            style={{
+              background: "#161616",
+              border: "1px solid #2a2a2a",
+              borderRadius: 10,
+              padding: "14px 16px",
+            }}
+          >
+            <div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>
+              {m.label}
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#e85d20" }}>
+              {m.val}
+            </div>
+            <div style={{ fontSize: 11, color: "#555" }}>{m.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          background: "#161616",
+          border: "1px solid #2a2a2a",
+          borderRadius: 12,
+          padding: 24,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            marginBottom: 4,
+            color: "#ccc",
+          }}
+        >
+          Per-class average error (MAE)
+        </div>
+        <div style={{ fontSize: 12, color: "#555", marginBottom: 20 }}>
+          Dashed line = overall MAE (0.2573). Lower is better.
+        </div>
+        <ResponsiveContainer width="100%" height={260}>
+          <BarChart
+            data={CLASS_DATA}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+            <XAxis
+              dataKey="depth"
+              tick={{ fill: "#666", fontSize: 12 }}
+              axisLine={{ stroke: "#2a2a2a" }}
+              tickLine={false}
+            />
+            <YAxis
+              domain={[0, 0.4]}
+              tick={{ fill: "#666", fontSize: 12 }}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(v) => v.toFixed(2)}
+            />
+            <Tooltip
+              contentStyle={{
+                background: "#1a1a1a",
+                border: "1px solid #333",
+                borderRadius: 6,
+                color: "#ccc",
+                fontSize: 12,
+              }}
+              formatter={(v) => [v.toFixed(4), "MAE"]}
+            />
+            <ReferenceLine
+              y={0.2573}
+              stroke="#555"
+              strokeDasharray="5 3"
+              label={{
+                value: "MAE 0.2573",
+                fill: "#555",
+                fontSize: 11,
+                position: "right",
+              }}
+            />
+            <Bar
+              dataKey="mae"
+              radius={[4, 4, 0, 0]}
+              label={{
+                position: "top",
+                fill: "#555",
+                fontSize: 10,
+                formatter: (v) => v.toFixed(3),
+              }}
+            >
+              {CLASS_DATA.map((d, i) => (
+                <Cell key={i} fill={barColor(d.mae)} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+        <div
+          style={{
+            display: "flex",
+            gap: 20,
+            marginTop: 12,
+            fontSize: 12,
+            color: "#555",
+          }}
+        >
+          <span>
+            <span
+              style={{
+                display: "inline-block",
+                width: 10,
+                height: 10,
+                borderRadius: 2,
+                background: "#16a34a",
+                marginRight: 6,
+                verticalAlign: "middle",
+              }}
+            />
+            Best (lowest error)
+          </span>
+          <span>
+            <span
+              style={{
+                display: "inline-block",
+                width: 10,
+                height: 10,
+                borderRadius: 2,
+                background: "#dc2626",
+                marginRight: 6,
+                verticalAlign: "middle",
+              }}
+            />
+            Worst (highest error)
+          </span>
+          <span>
+            <span
+              style={{
+                display: "inline-block",
+                width: 10,
+                height: 10,
+                borderRadius: 2,
+                background: "#e85d20",
+                marginRight: 6,
+                verticalAlign: "middle",
+              }}
+            />
+            Other classes
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Training Tab ──────────────────────────────────────────────────────────────
+function TrainingTab() {
+  const phaseColor = (phase) =>
+    phase === 1 ? "#555" : phase === 2 ? "#d97706" : "#e85d20";
+
+  return (
+    <div style={{ maxWidth: 860 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3,1fr)",
+          gap: 12,
+          marginBottom: 28,
+        }}
+      >
+        {[
+          {
+            label: "Phase 1 — 30 epochs",
+            val: "0.94",
+            sub: "Plateau detected",
+          },
+          {
+            label: "Phase 2 — 50 epochs",
+            val: "0.51",
+            sub: "+ checkpoint saving",
+          },
+          {
+            label: "Phase 3 — 75 epochs",
+            val: "0.19",
+            sub: "+ data augmentation",
+          },
+        ].map((m, i) => (
+          <div
+            key={m.label}
+            style={{
+              background: "#161616",
+              border: `1px solid ${["#333", "#d9770622", "#e85d2033"][i]}`,
+              borderRadius: 10,
+              padding: "14px 16px",
+              borderLeft: `3px solid ${["#555", "#d97706", "#e85d20"][i]}`,
+            }}
+          >
+            <div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>
+              {m.label}
+            </div>
+            <div
+              style={{
+                fontSize: 28,
+                fontWeight: 700,
+                color: ["#888", "#d97706", "#e85d20"][i],
+              }}
+            >
+              {m.val}
+            </div>
+            <div style={{ fontSize: 11, color: "#555" }}>{m.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          background: "#161616",
+          border: "1px solid #2a2a2a",
+          borderRadius: 12,
+          padding: 24,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            marginBottom: 4,
+            color: "#ccc",
+          }}
+        >
+          Validation loss across all 155 epochs
+        </div>
+        <div style={{ fontSize: 12, color: "#555", marginBottom: 20 }}>
+          80% improvement from Phase 1 to Phase 3 best.
+        </div>
+        <ResponsiveContainer width="100%" height={280}>
+          <LineChart
+            data={TRAINING_DATA}
+            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e1e1e" />
+            <XAxis
+              dataKey="epoch"
+              tick={{ fill: "#555", fontSize: 11 }}
+              axisLine={{ stroke: "#2a2a2a" }}
+              tickLine={false}
+              label={{
+                value: "Epoch",
+                position: "insideBottom",
+                offset: -2,
+                fill: "#555",
+                fontSize: 11,
+              }}
+            />
+            <YAxis
+              domain={[0, 1.0]}
+              tick={{ fill: "#555", fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(v) => v.toFixed(2)}
+            />
+            <Tooltip
+              contentStyle={{
+                background: "#1a1a1a",
+                border: "1px solid #333",
+                borderRadius: 6,
+                color: "#ccc",
+                fontSize: 12,
+              }}
+              formatter={(v, n, p) => [
+                v.toFixed(3),
+                `Phase ${p.payload.phase} val loss`,
+              ]}
+            />
+            <ReferenceLine
+              x={30}
+              stroke="#333"
+              strokeDasharray="4 3"
+              label={{ value: "P2", fill: "#444", fontSize: 10 }}
+            />
+            <ReferenceLine
+              x={80}
+              stroke="#333"
+              strokeDasharray="4 3"
+              label={{ value: "P3", fill: "#444", fontSize: 10 }}
+            />
+            <ReferenceLine
+              y={0.1948}
+              stroke="#e85d20"
+              strokeDasharray="4 3"
+              strokeOpacity={0.4}
+              label={{
+                value: "Best 0.1948",
+                fill: "#e85d20",
+                fontSize: 10,
+                position: "right",
+              }}
+            />
+            <Line
+              type="monotone"
+              dataKey="loss"
+              dot={false}
+              strokeWidth={2}
+              stroke="#e85d20"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3,1fr)",
+            gap: 10,
+            marginTop: 20,
+          }}
+        >
+          {[
+            {
+              phase: "Phase 1",
+              detail:
+                "Baseline from ImageNet weights. Hit a plateau at 0.94 — no checkpoint saving, risked losing the best state.",
+            },
+            {
+              phase: "Phase 2",
+              detail:
+                "Fresh restart with best-checkpoint saving. Val loss cut to 0.51. Best model preserved automatically.",
+            },
+            {
+              phase: "Phase 3",
+              detail:
+                "Resumed from Phase 2 best. Added random flips + ±15° rotation. Augmentation cut val loss by ~63%.",
+            },
+          ].map((p, i) => (
+            <div
+              key={p.phase}
+              style={{
+                background: "#1a1a1a",
+                borderRadius: 8,
+                padding: 12,
+                borderTop: `2px solid ${["#555", "#d97706", "#e85d20"][i]}`,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: ["#888", "#d97706", "#e85d20"][i],
+                  marginBottom: 6,
+                }}
+              >
+                {p.phase}
+              </div>
+              <div style={{ fontSize: 11, color: "#555", lineHeight: 1.7 }}>
+                {p.detail}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
