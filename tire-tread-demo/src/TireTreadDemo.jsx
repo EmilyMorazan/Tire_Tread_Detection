@@ -13,7 +13,7 @@ import {
   Cell,
 } from "recharts";
 
-// ── Data (classes )────────────────────────────────────────────────────────────────────
+// ── Data (classes)────────────────────────────────────────────────────────────────────
 const CLASS_DATA = [
   { depth: '2/32"', count: 18, mae: 0.1434, safety: "critical" },
   { depth: '3/32"', count: 50, mae: 0.2699, safety: "critical" },
@@ -67,18 +67,18 @@ function simulatePredict(depthIdx, lighting, angle) {
 
 function safetyInfo(depth) {
   if (depth <= 2)
-    return { label: "Replace immediately", color: "#dc2626", bg: "#fef2f2" };
+    return { label: "Replace immediately", color: "#B906D9", bg: "#fef2f2" };
   if (depth <= 3)
-    return { label: "Replace soon", color: "#ea580c", bg: "#fff7ed" };
+    return { label: "Replace soon", color: "#D906C7", bg: "#fff7ed" };
   if (depth <= 4)
-    return { label: "Monitor closely", color: "#d97706", bg: "#fffbeb" };
+    return { label: "Monitor closely", color: "#D906C7", bg: "#fffbeb" };
   return { label: "Safe to drive", color: "#16a34a", bg: "#f0fdf4" };
 }
 
 function TireIcon({ depth, size = 120 }) {
   const pct = (depth - 2) / 8;
   const grooveColor =
-    pct < 0.15 ? "#dc2626" : pct < 0.3 ? "#ea580c" : "#16a34a";
+    pct < 0.15 ? "#B906D9" : pct < 0.3 ? "#D906C7" : "#16a34a";
   const grooves = [0.28, 0.42, 0.58, 0.72];
   return (
     <svg width={size} height={size} viewBox="0 0 120 120">
@@ -177,7 +177,7 @@ export default function App() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#e85d20" }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#D906C7" }}>
                 {m.val}
               </div>
               <div style={{ fontSize: 10, color: "#666" }}>{m.label}</div>
@@ -206,9 +206,9 @@ export default function App() {
               padding: "14px 20px",
               fontSize: 13,
               fontWeight: activeTab === i ? 600 : 400,
-              color: activeTab === i ? "#e85d20" : "#666",
+              color: activeTab === i ? "#D906C7" : "#666",
               borderBottom:
-                activeTab === i ? "2px solid #e85d20" : "2px solid transparent",
+                activeTab === i ? "2px solid #D906C7" : "2px solid transparent",
               marginBottom: -1,
               transition: "all 0.15s",
               fontFamily: "inherit",
@@ -321,7 +321,7 @@ function PredictorTab() {
             marginTop: 20,
             width: "100%",
             padding: "12px 0",
-            background: running ? "#333" : "#e85d20",
+            background: running ? "#333" : "#D906C7",
             color: "#fff",
             border: "none",
             borderRadius: 8,
@@ -395,7 +395,7 @@ function PredictorTab() {
                 style={{
                   fontSize: 56,
                   fontWeight: 800,
-                  color: "#e85d20",
+                  color: "#D906C7",
                   lineHeight: 1,
                 }}
               >
@@ -445,7 +445,7 @@ function PredictorTab() {
                   style={{
                     height: "100%",
                     width: `${result.conf}%`,
-                    background: "#e85d20",
+                    background: "#D906C7",
                     borderRadius: 3,
                     transition: "width 0.6s ease",
                   }}
@@ -520,7 +520,7 @@ function SliderRow({ label, value, display, min, max, step, onChange }) {
         }}
       >
         <span>{label}</span>
-        <span style={{ color: "#e85d20", fontWeight: 600 }}>{display}</span>
+        <span style={{ color: "#D906C7", fontWeight: 600 }}>{display}</span>
       </div>
       <input
         type="range"
@@ -529,7 +529,7 @@ function SliderRow({ label, value, display, min, max, step, onChange }) {
         step={step}
         value={value}
         onChange={(e) => onChange(+e.target.value)}
-        style={{ width: "100%", accentColor: "#e85d20" }}
+        style={{ width: "100%", accentColor: "#D906C7" }}
       />
     </div>
   );
@@ -677,7 +677,7 @@ function UploadTab() {
                     style={{
                       fontSize: 52,
                       fontWeight: 800,
-                      color: "#e85d20",
+                      color: "#C706D9",
                       lineHeight: 1,
                     }}
                   >
@@ -714,13 +714,13 @@ function UploadTab() {
                   label="Confidence"
                   value={result.conf}
                   display={`${result.conf}%`}
-                  color="#e85d20"
+                  color="#C706D9"
                 />
                 <ConfBar
                   label="Class MAE"
                   value={(result.mae / 0.35) * 100}
                   display={`±${result.mae.toFixed(4)}`}
-                  color="#666"
+                  color="#C706D9"
                 />
 
                 <div
@@ -796,9 +796,9 @@ function ConfBar({ label, value, display, color }) {
 // ── Distribution Tab ──────────────────────────────────────────────────────────
 function DistributionTab() {
   const barColor = (d) => {
-    if (d.depth === '2/32"' || d.depth === '10/32"') return "#d97706";
-    if (d.count >= 100) return "#e85d20";
-    return "#7a3010";
+    if (d.depth === '2/32"' || d.depth === '10/32"') return "#D906C7";
+    if (d.count >= 100) return "#C706D9";
+    return "#78107A";
   };
   return (
     <div style={{ maxWidth: 860 }}>
@@ -828,7 +828,7 @@ function DistributionTab() {
             <div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>
               {m.label}
             </div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: "#e85d20" }}>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#C706D9" }}>
               {m.val}
             </div>
             {m.sub && (
@@ -914,7 +914,7 @@ function DistributionTab() {
                 width: 10,
                 height: 10,
                 borderRadius: 2,
-                background: "#e85d20",
+                background: "#D906C7",
                 marginRight: 6,
                 verticalAlign: "middle",
               }}
@@ -928,7 +928,7 @@ function DistributionTab() {
                 width: 10,
                 height: 10,
                 borderRadius: 2,
-                background: "#d97706",
+                background: "#C706D9",
                 marginRight: 6,
                 verticalAlign: "middle",
               }}
@@ -942,7 +942,7 @@ function DistributionTab() {
                 width: 10,
                 height: 10,
                 borderRadius: 2,
-                background: "#7a3010",
+                background: "#78107A",
                 marginRight: 6,
                 verticalAlign: "middle",
               }}
@@ -960,7 +960,7 @@ function ErrorsTab() {
   const maxErr = Math.max(...CLASS_DATA.map((d) => d.mae));
   const minErr = Math.min(...CLASS_DATA.map((d) => d.mae));
   const barColor = (mae) =>
-    mae === maxErr ? "#dc2626" : mae === minErr ? "#16a34a" : "#e85d20";
+    mae === maxErr ? "#EC169A" : mae === minErr ? "#16a34a" : "#C706D9";
 
   return (
     <div style={{ maxWidth: 860 }}>
@@ -989,7 +989,7 @@ function ErrorsTab() {
             <div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>
               {m.label}
             </div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: "#e85d20" }}>
+            <div style={{ fontSize: 24, fontWeight: 700, color: "#C706D9" }}>
               {m.val}
             </div>
             <div style={{ fontSize: 11, color: "#555" }}>{m.sub}</div>
@@ -1104,7 +1104,7 @@ function ErrorsTab() {
                 width: 10,
                 height: 10,
                 borderRadius: 2,
-                background: "#dc2626",
+                background: "#C706D9",
                 marginRight: 6,
                 verticalAlign: "middle",
               }}
@@ -1118,7 +1118,7 @@ function ErrorsTab() {
                 width: 10,
                 height: 10,
                 borderRadius: 2,
-                background: "#e85d20",
+                background: "#C706D9",
                 marginRight: 6,
                 verticalAlign: "middle",
               }}
@@ -1134,7 +1134,7 @@ function ErrorsTab() {
 // ── Training Tab ──────────────────────────────────────────────────────────────
 function TrainingTab() {
   const phaseColor = (phase) =>
-    phase === 1 ? "#555" : phase === 2 ? "#d97706" : "#e85d20";
+    phase === 1 ? "#555" : phase === 2 ? "#C706D9" : "#6D20E8";
 
   return (
     <div style={{ maxWidth: 860 }}>
@@ -1167,10 +1167,10 @@ function TrainingTab() {
             key={m.label}
             style={{
               background: "#161616",
-              border: `1px solid ${["#333", "#d9770622", "#e85d2033"][i]}`,
+              border: `1px solid ${["#333", "#D906B222", "#E820BD33"][i]}`,
               borderRadius: 10,
               padding: "14px 16px",
-              borderLeft: `3px solid ${["#555", "#d97706", "#e85d20"][i]}`,
+              borderLeft: `3px solid ${["#555", "#C706D9", "#6D20E8"][i]}`,
             }}
           >
             <div style={{ fontSize: 11, color: "#555", marginBottom: 4 }}>
@@ -1180,7 +1180,7 @@ function TrainingTab() {
               style={{
                 fontSize: 28,
                 fontWeight: 700,
-                color: ["#888", "#d97706", "#e85d20"][i],
+                color: ["#888", "#C706D9", "#6D20E8"][i],
               }}
             >
               {m.val}
@@ -1264,12 +1264,12 @@ function TrainingTab() {
             />
             <ReferenceLine
               y={0.1948}
-              stroke="#e85d20"
+              stroke="#6D20E8"
               strokeDasharray="4 3"
               strokeOpacity={0.4}
               label={{
                 value: "Best 0.1948",
-                fill: "#e85d20",
+                fill: "#6D20E8",
                 fontSize: 10,
                 position: "right",
               }}
@@ -1279,7 +1279,7 @@ function TrainingTab() {
               dataKey="loss"
               dot={false}
               strokeWidth={2}
-              stroke="#e85d20"
+              stroke="#6D20E8"
             />
           </LineChart>
         </ResponsiveContainer>
@@ -1315,20 +1315,20 @@ function TrainingTab() {
                 background: "#1a1a1a",
                 borderRadius: 8,
                 padding: 12,
-                borderTop: `2px solid ${["#555", "#d97706", "#e85d20"][i]}`,
+                borderTop: `2px solid ${["#555", "#C706D9", "#6D20E8"][i]}`,
               }}
             >
               <div
                 style={{
                   fontSize: 12,
                   fontWeight: 600,
-                  color: ["#888", "#d97706", "#e85d20"][i],
+                  color: ["#888", "#C706D9", "#6D20E8"][i],
                   marginBottom: 6,
                 }}
               >
                 {p.phase}
               </div>
-              <div style={{ fontSize: 11, color: "#555", lineHeight: 1.7 }}>
+              <div style={{ fontSize: 11, color: "#C706D9", lineHeight: 1.7 }}>
                 {p.detail}
               </div>
             </div>
