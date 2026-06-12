@@ -67,11 +67,11 @@ function simulatePredict(depthIdx, lighting, angle) {
 
 function safetyInfo(depth) {
   if (depth <= 2)
-    return { label: "Replace immediately", color: "#B906D9", bg: "#fef2f2" };
+    return { label: "Replace immediately", color: "#D90622", bg: "#fef2f2" };
   if (depth <= 3)
-    return { label: "Replace soon", color: "#D906C7", bg: "#fff7ed" };
+    return { label: "Replace soon", color: "#D9066C", bg: "#fff7ed" };
   if (depth <= 4)
-    return { label: "Monitor closely", color: "#D906C7", bg: "#fffbeb" };
+    return { label: "Monitor closely", color: "#D9068F", bg: "#fffbeb" };
   return { label: "Safe to drive", color: "#16a34a", bg: "#f0fdf4" };
 }
 
@@ -157,8 +157,8 @@ export default function App() {
             Tire Tread Depth Detection
           </div>
           <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>
-            ResNet-18 · ML Regression · Computer Vision &nbsp;·&nbsp; Mark
-            Youssef, Spencer Caillat, Emily Morazan
+            ResNet-18 · ML Regression · Computer Vision &nbsp;·&nbsp; Emily
+            Morazan
           </div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
